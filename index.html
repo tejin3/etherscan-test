@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>tejin3scan</title>
+  </head>
+  <body>
+    <h1>tejin3scan</h1>
+    <div class="first">
+      <label for="">from : </label><input type="text" name="" id="account" />
+
+      <label for="">to : </label><input type="text" name="" id="goTo" />
+
+      <label for="">보내려는 이더 양 : </label
+      ><input type="number" name="" id="howMoney" />
+      <!-- <br /> -->
+      <button onclick="transaction()">트랜잭션 전송</button>
+    </div>
+
+    <br />
+    <div class="first">
+      <label for="">잠금상태를 풀려는 어카운트 주소</label>
+      <input type="text" name="" id="unlockId" />
+      <label for="">비밀번호</label>
+      <input type="password" name="" id="unlockPass" />
+      <button onclick="unlockAccount()">잠금 해제</button>
+    </div>
+    <br />
+    <div class="first">
+      <label for="">비밀번호 입력 : </label
+      ><input type="password" name="" id="pass" />
+      <button onclick="createNewAccount()">새로운주소 생성</button>
+    </div>
+
+    <br />
+
+    <table id="dataTable"></table>
+
+    <br />
+    <p id="blockN"></p>
+    <input type="number" name="" id="blockNumber" />
+    <button onclick="getBlock()">블록넘버 불러오기</button><br />
+    <div id="blockWrite"></div>
+
+    <div id="blockWrite1"></div>
+    <div id="blockWrite2"></div>
+    <div id="blockWrite3"></div>
+    <div id="blockWrite4"></div>
+    <div id="blockWrite5"></div>
+    <div id="blockWrite6"></div>
+    <div id="blockWrite7"></div>
+    <div id="blockWrite8"></div>
+    <div id="blockWrite9"></div>
+    <div id="blockWrite10"></div>
+    <div id="blockWrite11"></div>
+    <div id="blockWrite12"></div>
+    <div id="blockWrite13"></div>
+    <div id="blockWrite14"></div>
+    <div id="blockWrite15"></div>
+
+    <br /><br />
+
+    <input type="text" name="" id="transactionNumber" placeholder="tx hash" />
+    <button onclick="getTransaction()">트랜잭션 불러오기</button><br />
+    <!-- <textarea name="" id="transactionWrite" cols="100" rows="10"></textarea> -->
+    <table id="transactionTable"></table>
+
+    <script type="text/javascript" src="./lib/bignumber.min.js"></script>
+    <!-- <script type="text/javascript" src="./lib/web3.js"></script> -->
+    <script src="./dist/web3.min.js"></script>
+
+    <script type="text/javascript">
+      let web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
+      let accounts;
+      async function getAccounts() {
+        accounts = await web3.eth.getAccounts().then();
+        console.log("accounts", accounts);
+      }
+      function listUp() {
+        let accounts;
+        async function getAccounts() {
+          accounts = await web3.eth.getAccounts().then();
+          console.log("accounts1", accounts);
+          let list = "";
+          let balance;
+          // console.log("balance1", balance);
+
+          for (var i = 0; i < accounts.length; i++) {
+            balance =
+              // web3.utils
+              // .fromWei(web3.eth.getBalance(accounts[i]))
+              // .then(console.log)
+              // .toNumber() + "ETH";
+              await web3.eth.getBalance(accounts[i]).then();
+            // web3.utils.fromWei('1', 'ether');
+
+            list +=
+              "<tr><td>" + accounts[i] + "</td> <td>" + balance + "</td> </tr>";
+          }
+          // console.log("balance", balance);
+          document.getElementById("dataTable").innerHTML = list;
+        }
+        getAccounts();
+      }
+
+      // console.log(accounts);
+
+      // console.log(web3.fromWei(balance).toNumber() + "ETH");
+      // var txHash = "";
+      // var txHash = "";
+
+      async function transaction() {
+        var key = document.getElementById("account").value;
+        var goGoTo = document.getElementById("goTo").value;
+        var money = document.getElementById("howMoney").value;
+        console.log("1", web3.eth.accounts[0]);
+        console.log("2", goGoTo);
+        console.log("3", money);
+
+        // web3.eth.sendTransaction({
+        //     from: web3.eth.accounts[0],
+        //     to: web3.eth.accounts[1],
+        //     value: web3.toWei(1, "ether"),
+        // });
+        let = txHash = await web3.eth.sendTransaction({
+          from: key,
+          to: goGoTo,
+          value: money,
+        });
+        listUp();
+        blockNumberMake();
+        console.log("넘버찾자", txHash);
+
+        document.getElementById("transactionNumber").value =
+          txHash.transactionHash;
+        // return txHash;
+      }
+
+      async function createNewAccount() {
+        var password = document.getElementById("pass").value;
+        // var create = document.getElementById("create").value;
+        // create = password;
+        console.log(password);
+        // console.log(create);
+        await web3.eth.personal.newAccount(password).then();
+
+        listUp();
+      }
+
+      async function unlockAccount() {
+        var unlockIdd = document.getElementById("unlockId").value;
+        var unlockPasss = document.getElementById("unlockPass").value;
+        console.log(unlockIdd);
+        console.log(unlockPasss);
+        await web3.eth.personal
+          .unlockAccount(unlockIdd, unlockPasss, 600)
+          .then(console.log("Account unlocked!"));
+      }
+
+      async function getBlock() {
+        var blockNumberr = document.getElementById("blockNumber").value;
+
+        await web3.eth.getBlock(blockNumberr, function (error, block) {
+          console.log(block);
+          document.getElementById("blockWrite").innerHTML =
+            "Block Height : " + block.number;
+          document.getElementById("blockWrite1").innerHTML =
+            "Timestamp : " + new Date(block.timestamp * 1000);
+          document.getElementById("blockWrite2").innerHTML =
+            "Transactions : " +
+            "이번 블록에서 처리한 트랜잭션갯수" +
+            block.transactions.length;
+          document.getElementById("blockWrite3").innerHTML =
+            "Mined by : " + block.miner;
+          document.getElementById("blockWrite4").innerHTML =
+            "Block Reward : " + "(2 + ?)";
+          document.getElementById("blockWrite5").innerHTML =
+            "difficulty : " + block.difficulty;
+          document.getElementById("blockWrite6").innerHTML =
+            "Total Difficulty : " + block.totalDifficulty;
+          document.getElementById("blockWrite7").innerHTML =
+            "Size : " + block.size + "byte";
+          document.getElementById("blockWrite8").innerHTML =
+            "Gas Used : " + block.gasUsed;
+          document.getElementById("blockWrite9").innerHTML =
+            "Gas Limit : " + block.gasLimit;
+          document.getElementById("blockWrite10").innerHTML =
+            "Extra Data : " + block.extraData;
+          document.getElementById("blockWrite11").innerHTML =
+            "Hash : " + block.hash;
+          document.getElementById("blockWrite12").innerHTML =
+            "Parent Hash : " + block.parentHash;
+          document.getElementById("blockWrite13").innerHTML =
+            "Sha3Uncles : " + block.sha3Uncles;
+          document.getElementById("blockWrite14").innerHTML =
+            "StateRoot : " + block.sha3Uncles;
+          document.getElementById("blockWrite15").innerHTML =
+            "Nonce : " + block.nonce;
+
+          // document.getElementById("blockWrite").innerHTML =
+          //     JSON.stringify(block);
+        });
+      }
+
+      async function getTransaction() {
+        // document.getElementById("transactionNumber").value = txHash;
+
+        var transactionNumberr =
+          document.getElementById("transactionNumber").value;
+        console.log(transactionNumberr);
+        await web3.eth.getTransaction(transactionNumberr, function (error, tx) {
+          console.log(tx);
+          // document.getElementById("transactionWrite").append(tx.hash, tx.nonce);
+
+          web3.eth.getBlock(tx.blockNumber, function (error, block) {
+            console.log(block);
+            var timestamp = new Date(block.timestamp * 1000);
+
+            document.getElementById("transactionTable").innerHTML =
+              "<tr><td>" +
+              "blockNumber : " +
+              "</td><td>" +
+              tx.blockNumber +
+              "</td></tr>" +
+              "<tr><td>" +
+              "blockHash : " +
+              "</td><td>" +
+              tx.blockHash +
+              "</td></tr>" +
+              "<tr><td>" +
+              "from : " +
+              "</td><td>" +
+              tx.from +
+              "</td></tr>" +
+              "<tr><td>" +
+              "Transaction Hash : " +
+              "</td><td>" +
+              tx.hash +
+              "</td></tr>" +
+              "<tr><td>" +
+              "nonce : " +
+              "</td><td>" +
+              tx.nonce +
+              "</td></tr>" +
+              "<tr><td>" +
+              "value : " +
+              "</td><td>" +
+              tx.value +
+              "</td></tr>" +
+              "<tr><td>" +
+              "to : " +
+              "</td><td>" +
+              tx.to +
+              "</td></tr>" +
+              "<tr><td>" +
+              "gasPrice : " +
+              "</td><td>" +
+              tx.gasPrice +
+              "</td></tr>" +
+              "<tr><td>" +
+              "Timestamp" +
+              "</td><td>" +
+              timestamp +
+              "</td></tr>" +
+              "<tr><td colspan='2'>" +
+              "input" +
+              "<textarea cols='100' ows='10'>" +
+              tx.input +
+              "</textarea></td>";
+          });
+          // console.log("time", timestamp);
+        });
+      }
+
+      async function blockNumberMake() {
+        var allBlock = await web3.eth.getBlockNumber().then();
+        document.getElementById("blockN").innerHTML =
+          "현재 블록 갯수 " + allBlock;
+      }
+      getAccounts();
+      blockNumberMake();
+      listUp();
+    </script>
+  </body>
+</html>
+<style>
+  * {
+    margin: 5px;
+  }
+
+  input {
+    width: 250px;
+  }
+  .first {
+    background-color: grey;
+    /* background-image: url("https://img1.daumcdn.net/thumb/R460x0/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fblogfile%2Ffs10%2F19_23_7_11_0DdlF_IMAGE_2_228.jpg&filename=228.jpg"); */
+  }
+  table {
+    width: 80%;
+  }
+
+  table,
+  td,
+  th {
+    border: 1px solid black;
+    border-collapse: collapse;
+    /* text-align: center; */
+  }
+</style>
