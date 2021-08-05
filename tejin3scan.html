@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>tejin3scan</title>
+    </head>
+    <body>
+        <h1>tejin3scan</h1>
+        <div class="first">
+            <input
+                type="text"
+                id="allSearch"
+                placeholder="Search by Address / Txt Hash / Block / Token"
+            />
+            <button onclick="allSearch()">검색</button>
+        </div>
+
+        <table id="blockWriteTable"></table>
+
+        <br /><br />
+
+        <script type="text/javascript" src="./lib/bignumber.min.js"></script>
+        <!-- <script type="text/javascript" src="./lib/web3.js"></script> -->
+        <script src="./dist/web3.min.js"></script>
+
+        <script type="text/javascript">
+            let web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
+            let accounts;
+
+            async function allSearch() {
+                let search = document.getElementById("allSearch").value;
+                if (search.length < 42) {
+                    var blockNumberr =
+                        document.getElementById("allSearch").value;
+
+                    await web3.eth.getBlock(
+                        blockNumberr,
+                        function (error, block) {
+                            console.log(block);
+                            let list = "";
+                            for (var j in block) {
+                                console.log("forin", j);
+                                console.log("forin", block[j]);
+
+                                if (j == "transactions") {
+                                    list +=
+                                        "<tr><td>" +
+                                        j +
+                                        "</td><td onclick='aa()' id='tjId'>" +
+                                        block[j] +
+                                        "</td></tr>";
+                                } else {
+                                    list +=
+                                        "<tr><td>" +
+                                        j +
+                                        "</td><td>" +
+                                        block[j] +
+                                        "</td></tr>";
+                                }
+                            }
+                            document.getElementById(
+                                "blockWriteTable"
+                            ).innerHTML = list;
+                        }
+                    );
+                } else if (search.length < 66) {
+                    let balance = await web3.eth.getBalance(search);
+                    let list =
+                        "<tr><td>" +
+                        search +
+                        "</td><td>" +
+                        balance +
+                        "</td></tr>";
+                    // console.log(balance.length);
+                    document.getElementById("blockWriteTable").innerHTML = list;
+                } else {
+                    var transactionNumberr =
+                        document.getElementById("allSearch").value;
+                    console.log(transactionNumberr);
+
+                    await web3.eth.getTransaction(
+                        transactionNumberr,
+                        function (error, tx) {
+                            console.log(tx);
+
+                            let list = "";
+                            // web3.eth.getBlock(
+                            //     tx.blockNumber,
+                            //     function (error, block) {
+                            //         console.log(block);
+                            //         timestamp = new Date(
+                            //             block.timestamp * 1000
+                            //         );
+                            //     }
+                            // );
+                            for (var j in tx) {
+                                console.log("forin", j);
+                                console.log("forin", tx[j]);
+
+                                if (j == "blockNumber") {
+                                    list +=
+                                        "<tr><td>" +
+                                        j +
+                                        "</td><td onclick='blockN()' id='blockNum'>" +
+                                        tx[j] +
+                                        "</td></tr>";
+                                } else if (j == "from") {
+                                    list +=
+                                        "<tr><td>" +
+                                        j +
+                                        "</td><td onclick='fromGo()' id='fromGo'>" +
+                                        tx[j] +
+                                        "</td></tr>";
+                                } else if (j == "to") {
+                                    list +=
+                                        "<tr><td>" +
+                                        j +
+                                        "</td><td onclick='toGo()' id='toGo'>" +
+                                        tx[j] +
+                                        "</td></tr>";
+                                } else {
+                                    list +=
+                                        "<tr><td>" +
+                                        j +
+                                        "</td><td>" +
+                                        tx[j] +
+                                        "</td></tr>";
+                                }
+                                document.getElementById(
+                                    "blockWriteTable"
+                                ).innerHTML = list;
+                                // +
+                                // "<tr><td>" +
+                                // "timestamp" +
+                                // "</td><td>" +
+                                // timestamp +
+                                // "</td></tr>";
+
+                                // console.log("time", timestamp);
+                            }
+                        }
+                    );
+                }
+            }
+            async function aa() {
+                console.log("클릭되나?");
+                var transactionNumberr1 =
+                    document.getElementById("tjId").innerHTML;
+                console.log(transactionNumberr1);
+
+                await web3.eth.getTransaction(
+                    transactionNumberr1,
+                    function (error, tx) {
+                        console.log(tx);
+
+                        let list = "";
+
+                        for (var j in tx) {
+                            console.log("forin", j);
+                            console.log("forin", tx[j]);
+
+                            if (j == "blockNumber") {
+                                list +=
+                                    "<tr><td>" +
+                                    j +
+                                    "</td><td onclick='blockN()' id='blockNum'>" +
+                                    tx[j] +
+                                    "</td></tr>";
+                            } else if (j == "from") {
+                                list +=
+                                    "<tr><td>" +
+                                    j +
+                                    "</td><td onclick='fromGo()' id='fromGo'>" +
+                                    tx[j] +
+                                    "</td></tr>";
+                            } else if (j == "to") {
+                                list +=
+                                    "<tr><td>" +
+                                    j +
+                                    "</td><td onclick='toGo()' id='toGo'>" +
+                                    tx[j] +
+                                    "</td></tr>";
+                            } else {
+                                list +=
+                                    "<tr><td>" +
+                                    j +
+                                    "</td><td>" +
+                                    tx[j] +
+                                    "</td></tr>";
+                            }
+                        }
+                        document.getElementById("blockWriteTable").innerHTML =
+                            list;
+                    }
+                );
+            }
+            async function blockN() {
+                console.log("왔니?");
+                var blockNumberr1 =
+                    document.getElementById("blockNum").innerHTML;
+
+                await web3.eth.getBlock(blockNumberr1, function (error, block) {
+                    console.log(block);
+                    let list = "";
+                    for (var j in block) {
+                        console.log("forin", j);
+                        console.log("forin", block[j]);
+
+                        if (j == "transactions") {
+                            list +=
+                                "<tr><td>" +
+                                j +
+                                "</td><td onclick='aa()' id='tjId'>" +
+                                block[j] +
+                                "</td></tr>";
+                        } else {
+                            list +=
+                                "<tr><td>" +
+                                j +
+                                "</td><td>" +
+                                block[j] +
+                                "</td></tr>";
+                        }
+                    }
+                    document.getElementById("blockWriteTable").innerHTML = list;
+                });
+            }
+            async function fromGo() {
+                var from1 = document.getElementById("fromGo").innerHTML;
+                let balance = await web3.eth.getBalance(from1);
+                let list =
+                    "<tr><td>" + from1 + "</td><td>" + balance + "</td></tr>";
+                // console.log(balance.length);
+                document.getElementById("blockWriteTable").innerHTML = list;
+            }
+            async function toGo() {
+                var to1 = document.getElementById("toGo").innerHTML;
+                let balance = await web3.eth.getBalance(to1);
+                let list =
+                    "<tr><td>" + to1 + "</td><td>" + balance + "</td></tr>";
+                // console.log(balance.length);
+                document.getElementById("blockWriteTable").innerHTML = list;
+            }
+        </script>
+    </body>
+</html>
+<style>
+    * {
+        margin: 5px;
+    }
+    #allSearch {
+        width: 90%;
+    }
+    .first {
+        background-color: grey;
+        /* background-image: url("https://img1.daumcdn.net/thumb/R460x0/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fblogfile%2Ffs10%2F19_23_7_11_0DdlF_IMAGE_2_228.jpg&filename=228.jpg"); */
+    }
+</style>
